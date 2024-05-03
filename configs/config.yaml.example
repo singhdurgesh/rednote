@@ -1,0 +1,20 @@
+# HERE IS JUST THE CONFIGURATION EXAMPLE FOR THE APP
+# DO NOT USING THIS FILE AS YOUR CONFIGURATION DIRECTLY
+# PLEASE COPY THIS FILE TO configs/config.yaml AND MODIFY IT
+
+# server
+server:
+  port: ":8080"
+
+# postgres
+postgres:
+  host: "localhost"
+  port: 5432
+  database: "rednote"
+  username: "postgres"
+  password: "postgres"
+redis:
+  host: localhost
+  port: 6379
+jwt:
+  secret: JWT Secret
