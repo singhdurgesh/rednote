@@ -1,8 +1,6 @@
 package services
 
 import (
-	"log"
-
 	"github.com/singhdurgesh/rednote/internal/models"
 	"github.com/singhdurgesh/rednote/internal/pkg/utils"
 
@@ -18,15 +16,19 @@ func (userService *UserService) LoginByUsernamePassword(username string, passwor
 
 	user := models.User{
 		Username: username,
+		Password: password,
+		BasicModel: models.BasicModel{
+			ID: 5,
+		},
 	}
 
-	log.Println(username, user)
 	res := db.First(&user, "username = ?", username)
 
 	if res.Error != nil || res.RowsAffected == 0 {
 		return ""
 	}
-	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	hash, _ := bcrypt.GenerateFromPassword([]byte(user.Password), 14)
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	if err != nil {
 		return ""
 	}

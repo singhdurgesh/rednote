@@ -43,5 +43,5 @@ func (userController *UserController) LoginByUsernamePassword(ctx *gin.Context) 
 		return
 	}
 
-	ctx.String(http.StatusOK, token)
+	ctx.JSON(http.StatusOK, gin.H{"auth_token": token})
 }
