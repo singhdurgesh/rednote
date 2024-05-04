@@ -3,7 +3,7 @@ package controllers
 import (
 	"net/http"
 
-	"github.com/singhdurgesh/rednote/internal/services"
+	"github.com/singhdurgesh/rednote/internal/app/services"
 
 	"github.com/gin-gonic/gin"
 )
@@ -44,4 +44,35 @@ func (userController *UserController) LoginByUsernamePassword(ctx *gin.Context) 
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"auth_token": token})
+}
+
+func (userController *UserController) SignupByUsernamePassword(ctx *gin.Context) {
+	data := make(map[string]interface{})
+
+	if err := ctx.ShouldBindJSON(&data); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"code": http.StatusBadRequest, "message": err.Error()})
+		return
+	}
+
+	password := data["password"]
+	password_confirmation := data["password_confirmation"]
+
+	if password == "" || password_confirmation == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"code": http.StatusBadRequest, "message": "password should be present"})
+		return
+	}
+
+	if password != password_confirmation {
+		ctx.JSON(http.StatusBadRequest, gin.H{"code": http.StatusBadRequest, "message": "passwords didn't match"})
+		return
+	}
+
+	token, user := userService.SignupByUsernamePassword(data)
+
+	if token == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"code": http.StatusBadRequest, "message": "param error"})
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, gin.H{"token": token, "user": user})
 }

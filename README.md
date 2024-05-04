@@ -3,7 +3,7 @@
 ## Go Repo that includes/or will include
 
 - User Registration Methods using
-    - using Username/Password
+    - **using Username/Password - Done**
     - using OTP on Phone/Email
     - using Google SSO
     - using Apple SSO

@@ -9,10 +9,10 @@ import (
 	"time"
 
 	"github.com/singhdurgesh/rednote/configs"
+	"github.com/singhdurgesh/rednote/internal/app/services"
 	"github.com/singhdurgesh/rednote/internal/pkg/logger"
 	"github.com/singhdurgesh/rednote/internal/pkg/postgres"
 	"github.com/singhdurgesh/rednote/internal/router"
-	"github.com/singhdurgesh/rednote/internal/services"
 )
 
 func Init() {

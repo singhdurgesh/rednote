@@ -1,7 +1,7 @@
 package router
 
 import (
-	"github.com/singhdurgesh/rednote/internal/controllers"
+	"github.com/singhdurgesh/rednote/internal/app/controllers"
 	"github.com/singhdurgesh/rednote/internal/middlewares"
 
 	"github.com/gin-gonic/gin"

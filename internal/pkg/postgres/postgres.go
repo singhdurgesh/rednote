@@ -4,11 +4,12 @@ import (
 	"fmt"
 
 	"github.com/singhdurgesh/rednote/configs"
-	"github.com/singhdurgesh/rednote/internal/models"
+	"github.com/singhdurgesh/rednote/internal/app/models"
 	"github.com/singhdurgesh/rednote/internal/pkg/logger"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	gorm_logger "gorm.io/gorm/logger"
 )
 
 var DB *gorm.DB
@@ -28,7 +29,9 @@ func Connect(config *configs.Postgres) *gorm.DB {
 	fmt.Println(address)
 
 	// refer https://gorm.io/docs/connecting_to_the_database.html#PostgreSQL for details
-	db, err := gorm.Open(postgres.Open(address), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(address), &gorm.Config{
+		Logger: gorm_logger.Default.LogMode(gorm_logger.Info),
+	})
 
 	if err != nil {
 		fmt.Println(err)
