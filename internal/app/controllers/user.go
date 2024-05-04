@@ -56,9 +56,10 @@ func (userController *UserController) SignupByUsernamePassword(ctx *gin.Context)
 
 	password := data["password"]
 	password_confirmation := data["password_confirmation"]
+	username := data["username"]
 
-	if password == "" || password_confirmation == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"code": http.StatusBadRequest, "message": "password should be present"})
+	if password == "" || password == nil || password_confirmation == "" || password_confirmation == nil || username == "" || username == nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"code": http.StatusBadRequest, "message": "username/password should be present"})
 		return
 	}
 

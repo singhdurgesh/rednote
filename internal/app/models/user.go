@@ -1,16 +1,20 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"github.com/singhdurgesh/rednote/pkg/datatypes"
+)
 
 type User struct {
 	BasicModel
 
-	Name               string    `json:"name"`                        // Name
-	Username           string    `json:"username" gorm:"uniqueIndex"` // Username
-	Password           string    `json:"password"`                    // Password
-	Phone              string    `json:"phone" gorm:"uniqueIndex"`    // Phone
-	Email              string    `json:"email" gorm:"uniqueIndex"`    // Email
-	OtpSecret          string    `json:"-"`
-	ResetPasswordToken string    `json:"-"`
-	LastLoginAt        time.Time `json:"last_login_at"` // Last login time
+	Name               datatypes.NullString // Name
+	Username           datatypes.NullString `json:"username" gorm:"uniqueIndex"` // Username
+	Password           datatypes.NullString `json:"-"`                           // Password
+	Phone              datatypes.NullString `json:"phone" gorm:"uniqueIndex"`    // Phone
+	Email              datatypes.NullString `json:"email" gorm:"uniqueIndex"`    // Email
+	OtpSecret          string               `json:"-"`
+	ResetPasswordToken string               `json:"-"`
+	LastLoginAt        time.Time            `json:"-"` // Last login time
 }

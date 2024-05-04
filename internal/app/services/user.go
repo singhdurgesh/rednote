@@ -24,7 +24,7 @@ func (userService *UserService) LoginByUsernamePassword(username string, passwor
 		return ""
 	}
 
-	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	err := bcrypt.CompareHashAndPassword([]byte(user.Password.String), []byte(password))
 	if err != nil {
 		return ""
 	}
@@ -50,25 +50,22 @@ func (userService *UserService) SignupByUsernamePassword(data map[string]interfa
 
 	token := userService.GenerateJwtToken(user)
 
+	db.Find(&user, "id = ?", user.ID)
 	return token, user
 }
 
 func (userService *UserService) CreateUser(data map[string]interface{}) *models.User {
-	// Validate the User Attributes
+	res := db.Model(&models.User{}).Create(data)
 
-	user := models.User{
-		Name:     data["name"].(string),
-		Username: data["username"].(string),
-		Email:    data["email"].(string),
-		Phone:    data["phone"].(string),
-	}
-
-	res := db.Create(&user)
+	// res := db.Create(&user)
 
 	if res.Error != nil || res.RowsAffected == 0 {
 		log.Println(res.Error, "Affected Rows: ", res.RowsAffected)
 		return nil
 	}
+
+	user := models.User{}
+	db.Find(&user, "id = ?", data["id"])
 
 	return &user
 }
@@ -94,7 +91,7 @@ func (userService *UserService) UpdatePassword(userId int, password string) erro
 
 func (userService *UserService) GenerateJwtToken(user *models.User) string {
 	claims := utils.Claims{
-		Username: user.Username,
+		Username: user.Username.String,
 		Uid:      user.ID,
 	}
 
