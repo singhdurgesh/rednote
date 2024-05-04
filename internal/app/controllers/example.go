@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/singhdurgesh/rednote/internal/services"
+	"github.com/singhdurgesh/rednote/internal/app/services"
 
 	"github.com/gin-gonic/gin"
 )

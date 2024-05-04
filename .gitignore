@@ -9,6 +9,8 @@
 *.dll
 *.so
 *.dylib
+logs/
+__debug*
 
 configs/config.yaml
 

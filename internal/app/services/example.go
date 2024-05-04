@@ -1,7 +1,7 @@
 package services
 
 import (
-	"github.com/singhdurgesh/rednote/internal/models"
+	"github.com/singhdurgesh/rednote/internal/app/models"
 )
 
 type ExampleService struct{}
