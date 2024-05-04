@@ -77,3 +77,76 @@ func (userController *UserController) SignupByUsernamePassword(ctx *gin.Context)
 
 	ctx.JSON(http.StatusCreated, gin.H{"token": token, "user": user})
 }
+
+func (userController *UserController) SendLoginOtpPhone(ctx *gin.Context) {
+	data := make(map[string]interface{})
+
+	if err := ctx.ShouldBindJSON(&data); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"code": http.StatusBadRequest, "message": err.Error()})
+		return
+	}
+	phone := data["phone"]
+
+	if phone == nil || phone == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"code": http.StatusBadRequest, "message": "error param"})
+		return
+	}
+
+	result, err := userService.SendLoginOtpPhone(data["phone"].(string))
+
+	if !result {
+		ctx.JSON(http.StatusBadRequest, gin.H{"code": http.StatusBadRequest, "message": err})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"status": "successful"})
+}
+
+func (userController *UserController) VerifyLoginOtpPhone(ctx *gin.Context) {
+	data := make(map[string]interface{})
+
+	if err := ctx.ShouldBindJSON(&data); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"code": http.StatusBadRequest, "message": err.Error()})
+		return
+	}
+	phone := data["phone"]
+	otp := data["otp"]
+
+	if phone == nil || phone == "" || otp == nil || otp == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"code": http.StatusBadRequest, "message": "error param"})
+		return
+	}
+
+	token, err := userService.VerifyLoginOtpPhone(data["phone"].(string), data["otp"].(string))
+
+	if err != "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"code": http.StatusBadRequest, "message": err})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"token": token})
+}
+
+func (userController *UserController) ResendLoginOtpPhone(ctx *gin.Context) {
+	data := make(map[string]interface{})
+
+	if err := ctx.ShouldBindJSON(&data); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"code": http.StatusBadRequest, "message": err.Error()})
+		return
+	}
+	phone := data["phone"]
+
+	if phone == nil || phone == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"code": http.StatusBadRequest, "message": "error param"})
+		return
+	}
+
+	result, err := userService.SendLoginOtpPhone(data["phone"].(string))
+
+	if !result {
+		ctx.JSON(http.StatusBadRequest, gin.H{"code": http.StatusBadRequest, "message": err})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"status": "successful"})
+}

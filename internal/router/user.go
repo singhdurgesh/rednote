@@ -14,6 +14,9 @@ func LoadUserRoutes(r *gin.Engine) *gin.RouterGroup {
 	{
 		user.POST("/signupByUsernamePassword", userController.SignupByUsernamePassword)
 		user.POST("/loginByUsernamePassword", userController.LoginByUsernamePassword)
+		user.POST("/auth/sendOtpPhone", userController.SendLoginOtpPhone)
+		user.POST("/auth/verifyOtpPhone", userController.VerifyLoginOtpPhone)
+		user.POST("/auth/resendOtpPhone", userController.ResendLoginOtpPhone)
 	}
 	return user
 }

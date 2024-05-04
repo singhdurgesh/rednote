@@ -57,8 +57,6 @@ func (userService *UserService) SignupByUsernamePassword(data map[string]interfa
 func (userService *UserService) CreateUser(data map[string]interface{}) *models.User {
 	res := db.Model(&models.User{}).Create(data)
 
-	// res := db.Create(&user)
-
 	if res.Error != nil || res.RowsAffected == 0 {
 		log.Println(res.Error, "Affected Rows: ", res.RowsAffected)
 		return nil
@@ -87,6 +85,37 @@ func (userService *UserService) UpdatePassword(userId int, password string) erro
 		return res.Error
 	}
 	return nil
+}
+
+func (userService *UserService) SendLoginOtpPhone(phone string) (bool, string) {
+	user := models.User{}
+	user.Phone.Scan(phone)
+
+	res := db.Where(&user).FirstOrCreate(&user)
+
+	if res.Error != nil {
+		log.Println(res.Error, "Affected Rows: ", res.RowsAffected)
+		return false, "Could not create the user"
+	}
+
+	// Generate and Send OTP Code
+	return true, ""
+}
+
+func (userService *UserService) VerifyLoginOtpPhone(phone string, otp string) (string, string) {
+	user := models.User{}
+	res := db.Find(&user, "phone = ?", phone)
+
+	if res.Error != nil {
+		log.Println(res.Error, "Affected Rows: ", res.RowsAffected)
+		return "", "Invalid Phone"
+	}
+
+	// Verify OTP Code
+
+	token := userService.GenerateJwtToken(&user)
+
+	return token, ""
 }
 
 func (userService *UserService) GenerateJwtToken(user *models.User) string {
