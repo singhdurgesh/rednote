@@ -18,3 +18,13 @@ redis:
   port: 6379
 jwt:
   secret: JWT Secret
+rabbitmq:
+  host: localhost
+  port: 5672
+  user: guest
+  password: guest
+  exchange: emails-exchange
+  queue: emails-queue
+  routingKey: emails-routing-key
+  consumerTag: emails-consumer
+  workerPoolSize: 6

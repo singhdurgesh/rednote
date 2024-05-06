@@ -1,7 +1,7 @@
 package main
 
-import "github.com/singhdurgesh/rednote/cmd/app"
+import "github.com/singhdurgesh/rednote/cmd/rednote"
 
 func main() {
-	app.Init()
+	rednote.Init()
 }

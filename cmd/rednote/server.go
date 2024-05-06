@@ -1,4 +1,4 @@
-package app
+package rednote
 
 import (
 	"context"
@@ -10,6 +10,7 @@ import (
 
 	"github.com/singhdurgesh/rednote/configs"
 	"github.com/singhdurgesh/rednote/internal/app/services"
+	"github.com/singhdurgesh/rednote/internal/jobs"
 	"github.com/singhdurgesh/rednote/internal/pkg/logger"
 	"github.com/singhdurgesh/rednote/internal/pkg/postgres"
 	"github.com/singhdurgesh/rednote/internal/router"
@@ -28,6 +29,9 @@ func Init() {
 
 	// connect Database
 	postgres.Connect(&configs.EnvConfig.Postgres)
+
+	// Start Work Publisher
+	jobs.PublisherStart()
 
 	// Service Initialization
 	services.Init()

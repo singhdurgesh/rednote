@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/singhdurgesh/rednote/internal/app/services"
+	"github.com/singhdurgesh/rednote/internal/jobs"
 
 	"github.com/gin-gonic/gin"
 )
@@ -147,6 +148,23 @@ func (userController *UserController) ResendLoginOtpPhone(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"code": http.StatusBadRequest, "message": err})
 		return
 	}
+
+	// Testing This Feature
+
+	// queueService := queueService.RabbitMQService{}
+
+	// queueService.CreateQueue("hello-world", false)
+	// queueService.CreateQueue("mja-ma", true)
+
+	// queueService.ClearQueue("golang-queue", true)
+	// queueService.DeleteQueue("hello-world", true, true, false)
+	// queueService.DeleteQueue("mja-ma", true, true, false)
+	// errr := queueService.PushJob("golang-queue", []byte("hello world"), "text/plain", time.Now())
+
+	// logger.LogrusLogger.Println(errr)
+
+	// logger.LogrusLogger.Println(queueService)
+	jobs.Publisher.Publish("golang-queue", "hello world", "text/plain")
 
 	ctx.JSON(http.StatusOK, gin.H{"status": "successful"})
 }
