@@ -27,10 +27,11 @@ func NewJobsPublisher(queueService queueService.QueueService) *JobsPublisher {
 	return &JobsPublisher{queueService: queueService}
 }
 
-func (j *JobsPublisher) Publish(queue string, message string, contentType string) {
-	j.queueService.PushJob(queue, []byte(message), contentType, time.Now())
+func (j *JobsPublisher) Publish(queue string, message string, contentType string) error {
+	return j.queueService.PushJob(queue, []byte(message), contentType, time.Now())
 }
 
-func (j *JobsPublisher) PublishwithDelay(queue string, message string, contentType string, time time.Time) {
-	j.queueService.PushJob(queue, []byte(message), contentType, time)
+// WIP: Not Ready to Use
+func (j *JobsPublisher) PublishwithDelay(queue string, message string, contentType string, time time.Time) error {
+	return j.queueService.PushJob(queue, []byte(message), contentType, time)
 }

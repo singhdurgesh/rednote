@@ -24,6 +24,8 @@ func Init() {
 	// example routes
 	LoadExampleRoutes(Router)
 
+	// job queue routes
+	LoadJobQueueRoutes(Router)
 	// init swagger
 	// Router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 }

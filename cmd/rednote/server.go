@@ -33,6 +33,7 @@ func Init() {
 	// Start Work Publisher
 	jobs.PublisherStart()
 
+	// go jobs.ConsumerStart()
 	// Service Initialization
 	services.Init()
 	// graceful shutdown
