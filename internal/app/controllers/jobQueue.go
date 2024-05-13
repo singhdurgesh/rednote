@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/singhdurgesh/rednote/internal/jobs"
+	"github.com/singhdurgesh/rednote/internal/jobs/tasks"
 	queueService "github.com/singhdurgesh/rednote/internal/pkg/queue_service"
 )
 
@@ -103,20 +104,9 @@ func (JobQueueController *JobQueueController) PushJob(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"code": http.StatusBadRequest, "message": "content should be present"})
 	}
 
-	content := data["content"].(string)
+	err := tasks.NewNotificationTask("9721323", 1234, "Random Data").RunAsync()
 
-	queue := "jobs"
-	content_type := "application/json"
-
-	if data["content_type"] != nil {
-		content_type = data["content_type"].(string)
-	}
-
-	if data["queue"] != nil {
-		queue = data["queue"].(string)
-	}
-
-	if err := jobs.Publisher.Publish(queue, content, content_type); err != nil {
+	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"code": http.StatusBadRequest, "message": err.Error()})
 		return
 	}
