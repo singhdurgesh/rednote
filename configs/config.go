@@ -12,6 +12,7 @@ type Config struct {
 	Redis    Redis
 	Server   Server
 	Jwt      Jwt
+	Rabbitmq Rabbitmq
 }
 
 var EnvConfig *Config

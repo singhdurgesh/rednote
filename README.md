@@ -18,6 +18,14 @@
 - Real Time Chat Application APIs
 - Real Time Location Tracking APIs
 
+- Job/Task Processing
+    - **RabbitMQ Integration - Done**
+    - **Machinery Package Integration - Done**
+    - AsyncTask Module
+    - AWS SQS Integration
+- Notification Service
+    - Abstract and Implementation of a Service
+
 TODO:
 - Deployment Pipelines
 - Github Pipelines
@@ -26,3 +34,4 @@ TODO:
     - Exposing New Apis
     - Building New Data Models
     - Building New Services
+- Database Migration with Goose Package

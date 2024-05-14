@@ -1,7 +1,16 @@
 package main
 
-import "github.com/singhdurgesh/rednote/cmd/app"
+import (
+	"os"
+
+	"github.com/singhdurgesh/rednote/cmd/rednote"
+	"github.com/singhdurgesh/rednote/cmd/worker"
+)
 
 func main() {
-	app.Init()
+	if len(os.Args) > 1 && os.Args[1] == "worker" {
+		worker.Init()
+	} else {
+		rednote.Init()
+	}
 }
