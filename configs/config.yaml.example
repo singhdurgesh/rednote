@@ -18,13 +18,17 @@ redis:
   port: 6379
 jwt:
   secret: JWT Secret
-rabbitmq:
+app:
+  otpsecret: LF2FSZBZMVZFGVDXO54DM2KOKRWWQQKLJJSS6VSOLFUVEVSQMYXVEWSOOVJWIYSH
+amqpconfig:
   host: localhost
   port: 5672
   user: guest
   password: guest
-  exchange: emails-exchange
-  queue: emails-queue
-  routingKey: emails-routing-key
-  consumerTag: emails-consumer
+  exchange: machinery_exchange
+  exchangeType: direct
+  bindingKey: machinery_task
+  queue: machinery_tasks
+  routingKey: ""
+  consumerTag: ""
   workerPoolSize: 6

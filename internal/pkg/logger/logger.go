@@ -12,9 +12,10 @@ var (
 	LogrusLogger *logrus.Logger
 )
 
-func Init() {
+func Init() *logrus.Logger {
 	LogrusLogger = InitLogrusLogger()
 
 	// ZapLogger = InitZapLogger()
 	// ZapSugar = ZapLogger.Sugar()
+	return LogrusLogger
 }

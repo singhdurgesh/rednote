@@ -8,16 +8,17 @@ import (
 )
 
 type Config struct {
-	Postgres Postgres
-	Redis    Redis
-	Server   Server
-	Jwt      Jwt
-	Rabbitmq Rabbitmq
+	Postgres   Postgres
+	Redis      Redis
+	Server     Server
+	Jwt        Jwt
+	AMQPConfig AMQPConfig
+	App        App
 }
 
 var EnvConfig *Config
 
-func LoadConfig() {
+func LoadConfig() *Config {
 	viper.AllowEmptyEnv(true)
 	viper.BindEnv("go_env")
 
@@ -51,5 +52,5 @@ func LoadConfig() {
 
 	EnvConfig = config
 
-	return
+	return config
 }

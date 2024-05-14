@@ -141,7 +141,7 @@ func (userController *UserController) ResendLoginOtpPhone(ctx *gin.Context) {
 		return
 	}
 
-	result, err := userService.SendLoginOtpPhone(data["phone"].(string))
+	result, err := userService.ReSendLoginOtpPhone(data["phone"].(string))
 
 	if !result {
 		ctx.JSON(http.StatusBadRequest, gin.H{"code": http.StatusBadRequest, "message": err})

@@ -8,59 +8,58 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/singhdurgesh/rednote/cmd/app"
 	"github.com/singhdurgesh/rednote/configs"
-	"github.com/singhdurgesh/rednote/internal/app/services"
-	"github.com/singhdurgesh/rednote/internal/jobs/task_register"
-	"github.com/singhdurgesh/rednote/internal/jobs/task_server"
+	"github.com/singhdurgesh/rednote/internal/pkg/amqp"
 	"github.com/singhdurgesh/rednote/internal/pkg/logger"
 	"github.com/singhdurgesh/rednote/internal/pkg/postgres"
+	"github.com/singhdurgesh/rednote/internal/pkg/redis"
 	"github.com/singhdurgesh/rednote/internal/router"
+	"github.com/singhdurgesh/rednote/internal/tasks/task_register"
 )
 
 func Init() {
+	app.Config = configs.LoadConfig() // Setup Configuration
+
+	// Connect Logger
+	app.Logger = logger.Init()
+
+	// connect Database
+	app.Db = postgres.Connect(&app.Config.Postgres)
+
+	// Connect Cache
+	app.Cache = redis.Connect(&app.Config.Redis)
+
+	// Start Work Task Server
+	app.Broker = amqp.Connect(&app.Config.AMQPConfig)
+	task_register.RegisterTasks()
+
 	// init router
 	router.Init()
 	r := router.Router
-
-	configs.LoadConfig() // Setup Configuration
-	EnvConfig := configs.EnvConfig
-
-	logger.Init()
-	logger := logger.LogrusLogger
-
-	// connect Database
-	postgres.Connect(&configs.EnvConfig.Postgres)
-
-	// Start Work Task Server
-	task_server.StartServer()
-	task_register.RegisterTasks()
-
-	// go jobs.ConsumerStart()
-	// Service Initialization
-	services.Init()
 	// graceful shutdown
 	server := &http.Server{
-		Addr:    EnvConfig.Server.Port,
+		Addr:    app.Config.Server.Port,
 		Handler: r,
 	}
 
-	logger.Printf("👻 Server is now listening at port:  %s\n", EnvConfig.Server.Port)
+	app.Logger.Printf("👻 Server is now listening at port:  %s\n", app.Config.Server.Port)
 
 	go func() {
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			logger.Fatalf("server listen error: %s\n", err)
+			app.Logger.Fatalf("server listen error: %s\n", err)
 		}
 	}()
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	i := <-quit
-	logger.Println("server receive a signal: ", i.String())
+	app.Logger.Println("server receive a signal: ", i.String())
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := server.Shutdown(ctx); err != nil {
-		logger.Fatalf("server shutdown error: %s\n", err)
+		app.Logger.Fatalf("server shutdown error: %s\n", err)
 	}
-	logger.Println("Server exiting")
+	app.Logger.Println("Server exiting")
 }
