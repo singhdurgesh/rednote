@@ -5,6 +5,7 @@ import (
 
 	"github.com/singhdurgesh/rednote/cmd/app"
 	"github.com/singhdurgesh/rednote/internal/app/models"
+	"github.com/singhdurgesh/rednote/internal/app/services/otp_handler"
 	"github.com/singhdurgesh/rednote/internal/pkg/utils"
 	"github.com/singhdurgesh/rednote/internal/tasks"
 	"github.com/singhdurgesh/rednote/internal/tasks/notifications"
@@ -112,6 +113,28 @@ func (userService *UserService) SendLoginOtpPhone(phone string) (bool, string) {
 	return true, ""
 }
 
+func (userService *UserService) ReSendLoginOtpPhone(phone string) (bool, string) {
+	user := models.User{}
+	user.Phone.Scan(phone)
+
+	res := app.Db.Where(&user).FirstOrCreate(&user)
+
+	if res.Error != nil {
+		log.Println(res.Error, "Affected Rows: ", res.RowsAffected)
+		return false, "Could not create the user"
+	}
+
+	// Generate and Send OTP Code
+	task := notifications.NewResendLoginOtpCommunication(user)
+	err := tasks.RunAsync(task)
+
+	if err != nil {
+		return false, err.Error()
+	}
+
+	return true, ""
+}
+
 func (userService *UserService) VerifyLoginOtpPhone(phone string, otp string) (string, string) {
 	user := models.User{}
 	res := app.Db.Find(&user, "phone = ?", phone)
@@ -122,6 +145,11 @@ func (userService *UserService) VerifyLoginOtpPhone(phone string, otp string) (s
 	}
 
 	// Verify OTP Code
+	result := otp_handler.ValidateOTP(phone, otp)
+
+	if !result {
+		return "", "Invalid OTP"
+	}
 
 	token := userService.GenerateJwtToken(&user)
 

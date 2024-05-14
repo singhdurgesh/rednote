@@ -5,7 +5,7 @@ import (
 
 	"github.com/singhdurgesh/rednote/cmd/app"
 	"github.com/singhdurgesh/rednote/internal/app/models"
-	"github.com/singhdurgesh/rednote/internal/app/services/text_notifications.go"
+	"github.com/singhdurgesh/rednote/internal/app/services/otp_handler"
 	"github.com/singhdurgesh/rednote/internal/tasks"
 )
 
@@ -23,6 +23,7 @@ type Communication struct {
 
 const (
 	loginOTP              = "login_otp"
+	loginResendOtp        = "login_resend_otp"
 	CommunicationTaskName = "communication"
 )
 
@@ -43,6 +44,13 @@ func NewLoginOtpCommunication(user models.User) *Communication {
 	return NewCommunication(emails, phones, loginOTP)
 }
 
+func NewResendLoginOtpCommunication(user models.User) *Communication {
+	phones := []string{user.Phone.String}
+	emails := []string{user.Email.String}
+
+	return NewCommunication(emails, phones, loginResendOtp)
+}
+
 func ProcessCommunication(data string) (bool, error) {
 	task := &Communication{}
 	return tasks.ProcessTask(task, data)
@@ -57,27 +65,11 @@ func (c *Communication) Run() error {
 	// Call the SMS Vendor Service and Email Service to Send the Email
 
 	if c.TemplateId == loginOTP {
-		// TODO: Create a New Service for Sending OTP
-		otp, err := text_notifications.LoginOTPGenerator(c.Phones[0])
-
-		if err != nil {
-			app.Logger.Println("OTP Generator Error: ", err)
-			return err
-		}
-
-		args := map[string]interface{}{"Otp": otp}
-		otpText, err := text_notifications.GetContentFromTemplate(c.TemplateId, args)
-		if err != nil {
-			app.Logger.Println("Get Content Error: ", err)
-			return err
-		}
-
-		err = text_notifications.SmsSender.SendSms(c.Phones, otpText)
-
-		if err != nil {
-			app.Logger.Println("SMS Sender Error: ", err)
-			return err
-		}
+		otp_handler.SendLoginOtp(c.Phones[0])
+	} else if c.TemplateId == loginResendOtp {
+		otp_handler.ResendLoginOtp(c.Phones[0])
+	} else {
+		app.Logger.Error("Invalid Template Id", c.TemplateId)
 	}
 
 	fmt.Println(c)

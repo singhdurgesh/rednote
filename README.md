@@ -4,12 +4,12 @@
 
 - User Registration Methods using
     - **using Username/Password - Done**
-    - using OTP on Phone/Email
+    - **using OTP on Phone/Email - Done**
     - using Google SSO
     - using Apple SSO
 - User Login Methods using
     - **Username/Password - Done**
-    - using OTP on Phone/Email
+    - **using OTP on Phone/Email**
     - using Google SSO
     - using Apple SSO
 - User Password Reset using
@@ -21,10 +21,11 @@
 - Job/Task Processing
     - **RabbitMQ Integration - Done**
     - **Machinery Package Integration - Done**
-    - AsyncTask Module
+    - **AsyncTask Module**
+        - **Notification Task Example - Done**
     - AWS SQS Integration
 - Notification Service
-    - Abstract and Implementation of a Service
+    - **Abstract and Implementation of a Service - Done**
 
 TODO:
 - Deployment Pipelines

@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/singhdurgesh/rednote/internal/tasks"
@@ -45,24 +46,16 @@ func (JobQueueController *JobQueueController) PushJobDelay(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"code": http.StatusBadRequest, "message": "content should be present"})
 	}
 
-	// content := data["content"].(string)
+	task := notifications.NewNotificationTask("9721323", 23457, "Delayed Task")
 
-	// queue := "jobs"
-	// content_type := "application/json"
+	time := time.Now().Add(1 * time.Minute)
 
-	// if data["content_type"] != nil {
-	// 	content_type = data["content_type"].(string)
-	// }
+	err := tasks.DelayRun(task, time)
 
-	// if data["queue"] != nil {
-	// 	queue = data["queue"].(string)
-	// }
-
-	// delayInMinutes := 0.0
-
-	// if data["delayInMinutes"] != nil {
-	// 	delayInMinutes = data["delayInMinutes"].(float64)
-	// }
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"code": http.StatusBadRequest, "message": err.Error()})
+		return
+	}
 
 	ctx.JSON(http.StatusCreated, gin.H{"status": "Jobs Pushed"})
 }

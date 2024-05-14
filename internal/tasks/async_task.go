@@ -3,6 +3,7 @@ package tasks
 import (
 	"encoding/base64"
 	"encoding/json"
+	"time"
 
 	"github.com/RichardKnop/machinery/v2/tasks"
 	"github.com/singhdurgesh/rednote/cmd/app"
@@ -30,6 +31,30 @@ func RunAsync(t AsyncTask) error {
 				Value: payload,
 			},
 		},
+	}
+
+	_, err = app.Broker.SendTask(&task)
+
+	return err
+}
+
+func DelayRun(t AsyncTask, time time.Time) error {
+	payload, err := json.Marshal(t)
+
+	if err != nil {
+		return err
+	}
+
+	logger.LogrusLogger.Println("Pushing Job with payload: ", string(payload))
+	task := tasks.Signature{
+		Name: t.Name(),
+		Args: []tasks.Arg{
+			{
+				Type:  "string",
+				Value: payload,
+			},
+		},
+		ETA: &time,
 	}
 
 	_, err = app.Broker.SendTask(&task)
