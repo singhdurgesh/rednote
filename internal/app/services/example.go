@@ -1,6 +1,7 @@
 package services
 
 import (
+	"github.com/singhdurgesh/rednote/cmd/app"
 	"github.com/singhdurgesh/rednote/internal/app/models"
 )
 
@@ -12,7 +13,7 @@ func (exampleService *ExampleService) CreateExample(data map[string]interface{})
 		Name: data["name"].(string),
 	}
 
-	res := db.Create(&example)
+	res := app.Db.Create(&example)
 	if res.Error != nil || res.RowsAffected == 0 {
 		return nil
 	}
@@ -24,7 +25,7 @@ func (exampleService *ExampleService) CreateExample(data map[string]interface{})
 func (exampleService *ExampleService) GetExample(exampleId int) *models.Example {
 
 	example := models.Example{}
-	res := db.First(&example, exampleId).Select("id, name, status")
+	res := app.Db.First(&example, exampleId).Select("id, name, status")
 
 	if res.Error != nil || res.RowsAffected == 0 {
 		return nil
@@ -37,7 +38,7 @@ func (exampleService *ExampleService) UpdateExample(data map[string]interface{})
 	example := models.Example{}
 	example.ID = uint(data["exampleId"].(int))
 
-	res := db.Model(&example).Updates(data)
+	res := app.Db.Model(&example).Updates(data)
 
 	if res.Error != nil || res.RowsAffected == 0 {
 		return false
@@ -48,7 +49,7 @@ func (exampleService *ExampleService) UpdateExample(data map[string]interface{})
 func (exampleService *ExampleService) DeleteExample(exampleId int) bool {
 
 	example := models.Example{}
-	res := db.Delete(&example, exampleId)
+	res := app.Db.Delete(&example, exampleId)
 
 	if res.Error != nil || res.RowsAffected == 0 {
 		return false

@@ -1,29 +1,30 @@
 package worker
 
 import (
+	"github.com/singhdurgesh/rednote/cmd/app"
 	"github.com/singhdurgesh/rednote/configs"
-	"github.com/singhdurgesh/rednote/internal/app/services"
-	"github.com/singhdurgesh/rednote/internal/jobs/task_register"
-	"github.com/singhdurgesh/rednote/internal/jobs/task_server"
+	"github.com/singhdurgesh/rednote/internal/pkg/amqp"
 	"github.com/singhdurgesh/rednote/internal/pkg/logger"
 	"github.com/singhdurgesh/rednote/internal/pkg/postgres"
+	"github.com/singhdurgesh/rednote/internal/pkg/redis"
+	"github.com/singhdurgesh/rednote/internal/tasks/task_register"
 )
 
 func Init() {
-	configs.LoadConfig() // Setup Configuration
+	app.Config = configs.LoadConfig() // Setup Configuration
 
-	logger.Init()
+	// Connect Logger
+	app.Logger = logger.Init()
 
 	// connect Database
-	postgres.Connect(&configs.EnvConfig.Postgres)
+	app.Db = postgres.Connect(&app.Config.Postgres)
 
-	services.Init()
+	// Connect Cache
+	app.Cache = redis.Connect(&app.Config.Redis)
 
-	task_server.StartServer()
+	// Start Work Task Server
+	app.Broker = amqp.Connect(&app.Config.AMQPConfig)
 	task_register.RegisterTasks()
-	err := task_server.StartWorker()
 
-	if err != nil {
-		logger.LogrusLogger.Panic(err)
-	}
+	amqp.StartWorker(app.Broker, app.Config.AMQPConfig.WorkerPoolSize)
 }

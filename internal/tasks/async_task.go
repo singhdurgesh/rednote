@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 
 	"github.com/RichardKnop/machinery/v2/tasks"
-	"github.com/singhdurgesh/rednote/internal/jobs/task_server"
+	"github.com/singhdurgesh/rednote/cmd/app"
 	"github.com/singhdurgesh/rednote/internal/pkg/logger"
 )
 
@@ -32,7 +32,7 @@ func RunAsync(t AsyncTask) error {
 		},
 	}
 
-	_, err = task_server.Runner.Server.SendTask(&task)
+	_, err = app.Broker.SendTask(&task)
 
 	return err
 }

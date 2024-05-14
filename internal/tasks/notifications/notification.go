@@ -3,7 +3,7 @@ package notifications
 import (
 	"fmt"
 
-	"github.com/singhdurgesh/rednote/internal/jobs/tasks"
+	"github.com/singhdurgesh/rednote/internal/tasks"
 )
 
 type NotificationTask struct {

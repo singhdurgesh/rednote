@@ -1,4 +1,4 @@
-package task_server
+package amqp
 
 import (
 	"fmt"
@@ -11,38 +11,28 @@ import (
 	"github.com/singhdurgesh/rednote/configs"
 )
 
-var Runner *TaskRunner
-
-type TaskRunner struct {
-	Server *machinery.Server
-}
-
-func StartServer() {
-	NewTaskRunner()
-}
-
-func NewTaskRunner() *TaskRunner {
+func Connect(AMQPConfig *configs.AMQPConfig) *machinery.Server {
 	c := &config.Config{
-		DefaultQueue:    "machinery_tasks",
+		DefaultQueue:    AMQPConfig.Queue,
 		ResultsExpireIn: 3600,
 		ResultBackend: fmt.Sprintf(
 			"amqp://%s:%s@%s:%s/",
-			configs.EnvConfig.Rabbitmq.User,
-			configs.EnvConfig.Rabbitmq.Password,
-			configs.EnvConfig.Rabbitmq.Host,
-			configs.EnvConfig.Rabbitmq.Port,
+			AMQPConfig.User,
+			AMQPConfig.Password,
+			AMQPConfig.Host,
+			AMQPConfig.Port,
 		),
 		Broker: fmt.Sprintf(
 			"amqp://%s:%s@%s:%s/",
-			configs.EnvConfig.Rabbitmq.User,
-			configs.EnvConfig.Rabbitmq.Password,
-			configs.EnvConfig.Rabbitmq.Host,
-			configs.EnvConfig.Rabbitmq.Port,
+			AMQPConfig.User,
+			AMQPConfig.Password,
+			AMQPConfig.Host,
+			AMQPConfig.Port,
 		),
 		AMQP: &config.AMQPConfig{
-			Exchange:      "machinery_exchange",
-			ExchangeType:  "direct",
-			BindingKey:    "machinery_task",
+			Exchange:      AMQPConfig.Exchange,
+			ExchangeType:  AMQPConfig.ExchangeType,
+			BindingKey:    AMQPConfig.BindingKey,
 			PrefetchCount: 3,
 		},
 	}
@@ -61,17 +51,15 @@ func NewTaskRunner() *TaskRunner {
 		panic(err)
 	}
 
-	t := &TaskRunner{
-		Server: server,
+	if err != nil {
+		panic(err)
 	}
 
-	Runner = t
-
-	return t
+	return server
 }
 
-func StartWorker() error {
-	worker := Runner.Server.NewWorker("", configs.EnvConfig.Rabbitmq.WorkerPoolSize)
+func StartWorker(Server *machinery.Server, WorkerCount int) error {
+	worker := Server.NewWorker("", WorkerCount)
 	if err := worker.Launch(); err != nil {
 		return err
 	}

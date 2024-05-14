@@ -3,10 +3,10 @@ package notifications
 import (
 	"fmt"
 
+	"github.com/singhdurgesh/rednote/cmd/app"
 	"github.com/singhdurgesh/rednote/internal/app/models"
 	"github.com/singhdurgesh/rednote/internal/app/services/text_notifications.go"
-	"github.com/singhdurgesh/rednote/internal/jobs/tasks"
-	"github.com/singhdurgesh/rednote/internal/pkg/logger"
+	"github.com/singhdurgesh/rednote/internal/tasks"
 )
 
 type Recepients struct {
@@ -61,21 +61,21 @@ func (c *Communication) Run() error {
 		otp, err := text_notifications.LoginOTPGenerator(c.Phones[0])
 
 		if err != nil {
-			logger.LogrusLogger.Println("OTP Generator Error: ", err)
+			app.Logger.Println("OTP Generator Error: ", err)
 			return err
 		}
 
 		args := map[string]interface{}{"Otp": otp}
 		otpText, err := text_notifications.GetContentFromTemplate(c.TemplateId, args)
 		if err != nil {
-			logger.LogrusLogger.Println("Get Content Error: ", err)
+			app.Logger.Println("Get Content Error: ", err)
 			return err
 		}
 
 		err = text_notifications.SmsSender.SendSms(c.Phones, otpText)
 
 		if err != nil {
-			logger.LogrusLogger.Println("SMS Sender Error: ", err)
+			app.Logger.Println("SMS Sender Error: ", err)
 			return err
 		}
 	}

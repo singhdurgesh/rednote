@@ -3,10 +3,11 @@ package services
 import (
 	"log"
 
+	"github.com/singhdurgesh/rednote/cmd/app"
 	"github.com/singhdurgesh/rednote/internal/app/models"
-	"github.com/singhdurgesh/rednote/internal/jobs/tasks"
-	"github.com/singhdurgesh/rednote/internal/jobs/tasks/notifications"
 	"github.com/singhdurgesh/rednote/internal/pkg/utils"
+	"github.com/singhdurgesh/rednote/internal/tasks"
+	"github.com/singhdurgesh/rednote/internal/tasks/notifications"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -20,7 +21,7 @@ func (userService *UserService) LoginByUsernamePassword(username string, passwor
 
 	user := models.User{}
 
-	res := db.First(&user, "username = ?", username)
+	res := app.Db.First(&user, "username = ?", username)
 
 	if res.Error != nil || res.RowsAffected == 0 {
 		return ""
@@ -52,12 +53,12 @@ func (userService *UserService) SignupByUsernamePassword(data map[string]interfa
 
 	token := userService.GenerateJwtToken(user)
 
-	db.Find(&user, "id = ?", user.ID)
+	app.Db.Find(&user, "id = ?", user.ID)
 	return token, user
 }
 
 func (userService *UserService) CreateUser(data map[string]interface{}) *models.User {
-	res := db.Model(&models.User{}).Create(data)
+	res := app.Db.Model(&models.User{}).Create(data)
 
 	if res.Error != nil || res.RowsAffected == 0 {
 		log.Println(res.Error, "Affected Rows: ", res.RowsAffected)
@@ -65,7 +66,7 @@ func (userService *UserService) CreateUser(data map[string]interface{}) *models.
 	}
 
 	user := models.User{}
-	db.Find(&user, "id = ?", data["id"])
+	app.Db.Find(&user, "id = ?", data["id"])
 
 	return &user
 }
@@ -81,7 +82,7 @@ func (userService *UserService) UpdatePassword(userId int, password string) erro
 	}
 	data := map[string]interface{}{"password": password_hash}
 
-	res := db.Model(&user).Updates(data)
+	res := app.Db.Model(&user).Updates(data)
 
 	if res.Error != nil || res.RowsAffected == 0 {
 		return res.Error
@@ -93,7 +94,7 @@ func (userService *UserService) SendLoginOtpPhone(phone string) (bool, string) {
 	user := models.User{}
 	user.Phone.Scan(phone)
 
-	res := db.Where(&user).FirstOrCreate(&user)
+	res := app.Db.Where(&user).FirstOrCreate(&user)
 
 	if res.Error != nil {
 		log.Println(res.Error, "Affected Rows: ", res.RowsAffected)
@@ -113,7 +114,7 @@ func (userService *UserService) SendLoginOtpPhone(phone string) (bool, string) {
 
 func (userService *UserService) VerifyLoginOtpPhone(phone string, otp string) (string, string) {
 	user := models.User{}
-	res := db.Find(&user, "phone = ?", phone)
+	res := app.Db.Find(&user, "phone = ?", phone)
 
 	if res.Error != nil {
 		log.Println(res.Error, "Affected Rows: ", res.RowsAffected)
