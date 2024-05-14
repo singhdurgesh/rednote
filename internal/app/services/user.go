@@ -4,6 +4,8 @@ import (
 	"log"
 
 	"github.com/singhdurgesh/rednote/internal/app/models"
+	"github.com/singhdurgesh/rednote/internal/jobs/tasks"
+	"github.com/singhdurgesh/rednote/internal/jobs/tasks/notifications"
 	"github.com/singhdurgesh/rednote/internal/pkg/utils"
 
 	"golang.org/x/crypto/bcrypt"
@@ -99,6 +101,13 @@ func (userService *UserService) SendLoginOtpPhone(phone string) (bool, string) {
 	}
 
 	// Generate and Send OTP Code
+	task := notifications.NewLoginOtpCommunication(user)
+	err := tasks.RunAsync(task)
+
+	if err != nil {
+		return false, err.Error()
+	}
+
 	return true, ""
 }
 

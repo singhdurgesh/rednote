@@ -9,8 +9,6 @@ import (
 	"github.com/RichardKnop/machinery/v2/config"
 	"github.com/RichardKnop/machinery/v2/locks/eager"
 	"github.com/singhdurgesh/rednote/configs"
-	"github.com/singhdurgesh/rednote/internal/jobs/tasks/notification"
-	"github.com/singhdurgesh/rednote/internal/pkg/logger"
 )
 
 var Runner *TaskRunner
@@ -79,16 +77,4 @@ func StartWorker() error {
 	}
 
 	return nil
-}
-
-func RegisterTasks() {
-	// Register New Tasks here
-	err := Runner.Server.RegisterTasks(map[string]interface{}{
-		"send_otp": notification.SendMail,
-		// "notification": tasks.ProcessNotification,
-	})
-
-	if err != nil {
-		logger.LogrusLogger.Fatalln(err)
-	}
 }

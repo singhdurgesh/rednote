@@ -9,6 +9,7 @@ import (
 
 var Publisher *JobsPublisher
 
+// Deprecated
 func PublisherStart() {
 	qs, err := queueService.NewRabbitMQService()
 

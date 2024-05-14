@@ -5,6 +5,7 @@ import (
 	queueService "github.com/singhdurgesh/rednote/internal/pkg/queue_service"
 )
 
+// Deprecated
 func ConsumerStart() {
 	// Start the number of workers defined in configuration
 	qs, err := queueService.NewRabbitMQService()
