@@ -16,20 +16,22 @@ type Config struct {
 	App        App
 }
 
-var EnvConfig *Config
-
 func LoadConfig() *Config {
+	viper.SetEnvPrefix("rednote")
+	viper.SetDefault("env", "local") // Defauld ENV Set to Local
 	viper.AllowEmptyEnv(true)
-	viper.BindEnv("go_env")
+	viper.AutomaticEnv()
 
 	path, err := os.Getwd() // get curent path
 	if err != nil {
 		panic(err)
 	}
 
-	viper.SetConfigName("config")
+	env := viper.Get("env")
+	fmt.Println(env)
+	viper.SetConfigName(fmt.Sprintf("config.%s", env))
 	viper.SetConfigType("yaml")
-	viper.AddConfigPath(path + "/configs")
+	viper.AddConfigPath(path + "/configs/environments")
 
 	if err := viper.ReadInConfig(); err != nil { // Handle errors reading the config file
 		fmt.Println("hellss")
@@ -49,8 +51,6 @@ func LoadConfig() *Config {
 		fmt.Println("hellss")
 		panic(fmt.Errorf("fatal error config file: %w", err))
 	}
-
-	EnvConfig = config
 
 	return config
 }

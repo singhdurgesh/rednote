@@ -1,4 +1,33 @@
+version: "3"
+
+x-backend: &backend
+  build:
+    context: .
+    dockerfile: deployments/Dockerfile.dev
+  environment:
+    - REDNOTE_ENV=docker
+  volumes:
+    - ./:/opt/app
+  depends_on:
+    rabbit_mq:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+    postgres:
+      condition: service_healthy
+
 services:
+  rednote:
+    <<: *backend
+    container_name: rednote
+    ports:
+      - "8080:8080"
+
+  worker:
+    <<: *backend
+    container_name: worker
+    command: go run main.go worker
+
   postgres:
     image: postgis/postgis:12-3.4-alpine
     platform: linux/amd64
@@ -8,11 +37,17 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
     ports:
       - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-U", "postgres", "-d", "rednote"]
+      interval: 1s
+      timeout: 60s
+      retries: 5
+      start_period: 80s
 
   redis:
     image: redis:4.0-alpine
     volumes:
-      - redis:/var/lib/redis/data
+      - redis:/data
     ports:
       - "6379:6379"
     healthcheck:
@@ -20,15 +55,21 @@ services:
       interval: 1s
       timeout: 5s
       retries: 10
+
   rabbit_mq:
     image: rabbitmq:3-management-alpine
     container_name: 'rabbitmq'
     ports:
-        - 5672:5672
-        - 15672:15672
+      - 5672:5672
+      - 15672:15672
     volumes:
-        - rabbitmq_data:/var/lib/rabbitmq/
-        - rabbitmq_log:/var/log/rabbitmq
+      - rabbitmq_data:/var/lib/rabbitmq/
+      - rabbitmq_log:/var/log/rabbitmq
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 1s
+      timeout: 30s
+      retries: 3
 
 volumes:
   postgres:

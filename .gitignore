@@ -12,7 +12,7 @@
 logs/
 __debug*
 
-configs/config.yaml
+configs/environments/*.yaml
 
 # Test binary, build with `go test -c`
 *.test
