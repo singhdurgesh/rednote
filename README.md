@@ -26,9 +26,12 @@
     - AWS SQS Integration
 - Notification Service
     - **Abstract and Implementation of a Service - Done**
+- Deployment Pipelines Setup
+    - Docker Setup
+        - **Dockerfile Creation - Done**
+        - **Docker Compose File - Done**
 
 TODO:
-- Deployment Pipelines
 - Github Pipelines
 - Containerized Deployments Guide
 - Setup Wiki for Deployment and Documentation

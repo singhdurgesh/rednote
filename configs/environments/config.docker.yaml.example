@@ -1,0 +1,34 @@
+# HERE IS JUST THE CONFIGURATION EXAMPLE FOR THE APP
+# DO NOT USING THIS FILE AS YOUR CONFIGURATION DIRECTLY
+# PLEASE COPY THIS FILE TO configs/config.yaml AND MODIFY IT
+
+# server
+server:
+  port: ":8080"
+
+# postgres
+postgres:
+  host: postgres
+  port: 5432
+  database: "rednote"
+  username: "postgres"
+  password: "postgres"
+redis:
+  host: redis
+  port: 6379
+jwt:
+  secret: JWT Secret
+app:
+  otpsecret: LF2FSZBZMVZFGVDXO54DM2KOKRWWQQKLJJSS6VSOLFUVEVSQMYXVEWSOOVJWIYSH
+amqpconfig:
+  host: rabbit_mq
+  port: 5672
+  user: guest
+  password: guest
+  exchange: machinery_exchange
+  exchangeType: direct
+  bindingKey: machinery_task
+  queue: machinery_tasks
+  routingKey: ""
+  consumerTag: ""
+  workerPoolSize: 6
