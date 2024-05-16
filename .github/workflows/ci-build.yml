@@ -36,6 +36,40 @@ jobs:
   # Otherwise, just run for Gemfile.lock
   build:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgis/postgis:12-3.4-alpine
+        volumes:
+          - postgres:/var/lib/postgresql/data
+        ports:
+          - "5432:5432"
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:4.0-alpine
+        volumes:
+          - redis:/data
+        ports:
+          - "6379:6379"
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      rabbit_mq:
+        image: rabbitmq:3-management-alpine
+        ports:
+          - 5672:5672
+        options: >-
+          --health-cmd "rabbitmq-diagnostics -q ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     strategy:
       matrix:
           go-version: [1.21]
@@ -50,31 +84,5 @@ jobs:
         run: go version
       - name: Install dependencies
         run: go get .
-  test:
-    runs-on: ubuntu-latest
-    needs: [build]
-    services:
-      postgres:
-        image: postgis/postgis:12-3.4-alpine
-        volumes:
-          - postgres:/var/lib/postgresql/data
-        ports:
-          - "5432:5432"
-        env:
-          POSTGRES_PASSWORD: postgres
-      redis:
-        image: redis:4.0-alpine
-        volumes:
-          - redis:/data
-        ports:
-          - "6379:6379"
-      rabbit_mq:
-        image: rabbitmq:3-management-alpine
-        ports:
-          - 5672:5672
-    steps:
       - name: Test with Go
         run: go test ./...
-      
-        
-
