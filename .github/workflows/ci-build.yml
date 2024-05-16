@@ -36,23 +36,6 @@ jobs:
   # Otherwise, just run for Gemfile.lock
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-          go-version: [1.21]
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup Go ${{ matrix.go-version }}
-        uses: actions@setup-go@v5
-        with:
-          go-version: ${{ matrix.go-version }}
-      # Check if the Go has been installed with Correct Version
-      - name: Display Go version
-        run: go version
-      - name: Install dependencies
-        run: go get .
-  test:
-    runs-on: ubuntu-latest
-    needs: [build]
     services:
       postgres:
         image: postgis/postgis:12-3.4-alpine
@@ -62,19 +45,44 @@ jobs:
           - "5432:5432"
         env:
           POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
       redis:
         image: redis:4.0-alpine
         volumes:
           - redis:/data
         ports:
           - "6379:6379"
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
       rabbit_mq:
         image: rabbitmq:3-management-alpine
         ports:
           - 5672:5672
+        options: >-
+          --health-cmd "rabbitmq-diagnostics -q ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    strategy:
+      matrix:
+          go-version: [1.21]
     steps:
+      - uses: actions/checkout@v4
+      - name: Setup Go ${{ matrix.go-version }}
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go-version }}
+      # Check if the Go has been installed with Correct Version
+      - name: Display Go version
+        run: go version
+      - name: Install dependencies
+        run: go get .
       - name: Test with Go
         run: go test ./...
-      
-        
-
