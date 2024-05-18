@@ -6,4 +6,5 @@ type Redis struct {
 	UserName string
 	Password string
 	Db       int
+	Encrypt  bool
 }

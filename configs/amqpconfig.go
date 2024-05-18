@@ -1,6 +1,7 @@
 package configs
 
 type AMQPConfig struct {
+	Protocol       string
 	Host           string
 	Port           string
 	User           string

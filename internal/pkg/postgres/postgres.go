@@ -2,35 +2,49 @@ package postgres
 
 import (
 	"fmt"
+	"time"
 
+	"github.com/singhdurgesh/rednote/cmd/app"
 	"github.com/singhdurgesh/rednote/configs"
 	"github.com/singhdurgesh/rednote/internal/app/models"
-	"github.com/singhdurgesh/rednote/internal/pkg/logger"
+	"github.com/spf13/viper"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	gorm_logger "gorm.io/gorm/logger"
 )
 
-var DB *gorm.DB
-
 func Connect(config *configs.Postgres) *gorm.DB {
-
-	logger := logger.LogrusLogger
-
-	address := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=disable TimeZone=Asia/Kolkata",
+	address := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=%s sslrootcert=%s sslcert=%s sslkey=%s TimeZone=Asia/Kolkata",
 		config.Host,
 		config.Username,
 		config.Password,
 		config.Database,
 		config.Port,
+		config.Sslmode,
+		config.Sslrootcert,
+		config.Sslcert,
+		config.Sslkey,
 	)
 
-	fmt.Println(address)
+	logLevel := gorm_logger.Info
+
+	if viper.Get("env") == "staging" || viper.Get("env") == "production" {
+		logLevel = gorm_logger.Warn
+	}
+
+	db_logger := gorm_logger.New(app.Logger,
+		gorm_logger.Config{
+			SlowThreshold:             200 * time.Millisecond,
+			LogLevel:                  logLevel,
+			IgnoreRecordNotFoundError: false,
+			Colorful:                  true,
+		},
+	)
 
 	// refer https://gorm.io/docs/connecting_to_the_database.html#PostgreSQL for details
 	db, err := gorm.Open(postgres.Open(address), &gorm.Config{
-		Logger: gorm_logger.Default.LogMode(gorm_logger.Info),
+		Logger: db_logger,
 	})
 
 	if err != nil {
@@ -44,10 +58,7 @@ func Connect(config *configs.Postgres) *gorm.DB {
 		panic(`😫: Auto migrate failed, check your Postgres with ` + address)
 	}
 
-	// export DB
-	DB = db
-
-	logger.Printf("🍟: Successfully connected to Postgres at "+address, DB)
+	app.Logger.Printf("🍟: Successfully connected to Postgres: %v", db)
 
 	return db
 

@@ -30,10 +30,13 @@
     - Docker Setup
         - **Dockerfile Creation - Done**
         - **Docker Compose File - Done**
+- Github Pipelines
+    - **Workflow Setup**
+    - Workflow Deployment to AWS EC2
 
 TODO:
-- Github Pipelines
 - Containerized Deployments Guide
+    - Deployments without Downtime (Kubernetes | EKS)
 - Setup Wiki for Deployment and Documentation
     - Exposing New Apis
     - Building New Data Models
