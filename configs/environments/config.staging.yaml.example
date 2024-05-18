@@ -8,21 +8,26 @@ server:
 
 # postgres
 postgres:
-  host: postgres
+  host: <database host>
   port: 5432
   database: "rednote"
   username: "postgres"
   password: "postgres"
+  sslmode: verify-ca
+  sslrootcert: "path to ssl root cert"
+  sslcert: "path to ssl cert"
+  sslkey: "path to ssl key"
 redis:
-  host: redis
+  host: <redis host>
   port: 6379
+  encrypt: true
 jwt:
-  secret: JWT Secret
+  secret: <JWT Secret Key>
 app:
-  otpsecret: OTP Secret
+  otpsecret: LF2FSZBZMVZFGVDXO54DM2KOKRWWQQKLJJSS6VSOLFUVEVSQMYXVEWSOOVJWIYSH
 amqpconfig:
-  protocol: amqp
-  host: rabbit_mq
+  protocol: amqps
+  host: <Rabbit MQ Host>
   port: 5672
   user: guest
   password: guest

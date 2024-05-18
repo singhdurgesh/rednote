@@ -17,10 +17,11 @@ redis:
   host: localhost
   port: 6379
 jwt:
-  secret: JWT Secret
+  secret: <JWT Secret Key>
 app:
-  otpsecret: LF2FSZBZMVZFGVDXO54DM2KOKRWWQQKLJJSS6VSOLFUVEVSQMYXVEWSOOVJWIYSH
+  otpsecret: <OTP Secret Key>
 amqpconfig:
+  protocol: amqp
   host: localhost
   port: 5672
   user: guest

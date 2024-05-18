@@ -22,11 +22,15 @@ services:
     container_name: rednote
     ports:
       - "8080:8080"
+    networks:
+      - rednote_network
 
   worker:
     <<: *backend
     container_name: worker
     command: go run main.go worker
+    networks:
+      - rednote_network
 
   postgres:
     image: postgis/postgis:12-3.4-alpine
@@ -38,11 +42,13 @@ services:
     ports:
       - "5432:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready", "-U", "postgres", "-d", "rednote"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d rednote"]
       interval: 1s
       timeout: 60s
       retries: 5
       start_period: 80s
+    networks:
+      - rednote_network
 
   redis:
     image: redis:4.0-alpine
@@ -55,6 +61,8 @@ services:
       interval: 1s
       timeout: 5s
       retries: 10
+    networks:
+      - rednote_network
 
   rabbit_mq:
     image: rabbitmq:3-management-alpine
@@ -70,9 +78,28 @@ services:
       interval: 1s
       timeout: 30s
       retries: 3
+    networks:
+      - rednote_network
+  localstack:
+    container_name: "${LOCALSTACK_DOCKER_NAME:-localstack-main}"
+    image: localstack/localstack
+    ports:
+      - "127.0.0.1:4566:4566"            # LocalStack Gateway
+      - "127.0.0.1:4510-4559:4510-4559"  # external services port range
+    environment:
+      # LocalStack configuration: https://docs.localstack.cloud/references/configuration/
+      - DEBUG=${DEBUG:-0}
+    volumes:
+      - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
 
 volumes:
   postgres:
   redis:
   rabbitmq_data:
   rabbitmq_log:
+  volume:
+
+networks:
+  rednote_network:
+    driver: bridge

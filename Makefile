@@ -14,6 +14,9 @@ docker_down:
 docker_build:
 	docker-compose up --build -d
 
+docker_app:
+	docker run -it --rm --network=rednote_rednote_network -e "REDNOTE_ENV=docker" -p 8080:8080 rednote-rednote
+
 docker_up:
 	docker-compose up -d
 
