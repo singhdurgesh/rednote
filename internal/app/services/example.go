@@ -1,25 +1,36 @@
 package services
 
 import (
+	"errors"
+
 	"github.com/singhdurgesh/rednote/cmd/app"
 	"github.com/singhdurgesh/rednote/internal/app/models"
 )
 
 type ExampleService struct{}
 
-func (exampleService *ExampleService) CreateExample(data map[string]interface{}) *models.Example {
+func (exampleService *ExampleService) CreateExample(data map[string]interface{}) (*models.Example, error) {
+
+	name := ""
+
+	if data["name"] != nil {
+		name = data["name"].(string)
+	}
+
+	if name == "" {
+		return nil, errors.New("name should be present")
+	}
 
 	example := models.Example{
-		Name: data["name"].(string),
+		Name: name,
 	}
 
 	res := app.Db.Create(&example)
 	if res.Error != nil || res.RowsAffected == 0 {
-		return nil
+		return nil, res.Error
 	}
 
-	return &example
-
+	return &example, nil
 }
 
 func (exampleService *ExampleService) GetExample(exampleId int) *models.Example {
@@ -34,6 +45,16 @@ func (exampleService *ExampleService) GetExample(exampleId int) *models.Example 
 }
 
 func (exampleService *ExampleService) UpdateExample(data map[string]interface{}) bool {
+
+	exampleId := ""
+
+	if data["exampleId"] != nil {
+		exampleId = data["exampleId"].(string)
+	}
+
+	if exampleId == "" {
+		return false
+	}
 
 	example := models.Example{}
 	example.ID = uint(data["exampleId"].(int))
