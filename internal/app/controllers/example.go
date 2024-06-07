@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/singhdurgesh/rednote/cmd/app"
+	"github.com/singhdurgesh/rednote/internal/app/models"
 	"github.com/singhdurgesh/rednote/internal/app/services"
 
 	"github.com/gin-gonic/gin"
@@ -12,6 +14,20 @@ import (
 var exampleService = new(services.ExampleService)
 
 type ExampleController struct{}
+
+func (exampleController *ExampleController) GetExampleLists(ctx *gin.Context) {
+	data := []models.Example{}
+	res := app.Db.Find(&data)
+
+	app.Logger.Info(data)
+	app.Logger.Info(res)
+
+	if res.Error != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"code": http.StatusBadRequest, "message": res.Error.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"examples": data})
+}
 
 // @Router /examples/createExample [post]
 // @Description Create Example
@@ -25,9 +41,9 @@ func (exampleController *ExampleController) CreateExample(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"code": http.StatusBadRequest, "message": err.Error()})
 		return
 	}
-	res := exampleService.CreateExample(data)
-	if res == nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"code": http.StatusInternalServerError, "message": "Internal Server Error"})
+	res, err := exampleService.CreateExample(data)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"code": http.StatusBadRequest, "message": err.Error()})
 		return
 	}
 	ctx.JSON(http.StatusOK, res)

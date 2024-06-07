@@ -6,7 +6,6 @@ import (
 
 	"github.com/singhdurgesh/rednote/cmd/app"
 	"github.com/singhdurgesh/rednote/configs"
-	"github.com/singhdurgesh/rednote/internal/app/models"
 	"github.com/spf13/viper"
 
 	"gorm.io/driver/postgres"
@@ -50,12 +49,6 @@ func Connect(config *configs.Postgres) *gorm.DB {
 	if err != nil {
 		fmt.Println(err)
 		panic(`😫: Connected failed, check your Postgres with ` + address)
-	}
-
-	// Migrate the schema
-	migrateErr := db.AutoMigrate(&models.Example{}, &models.User{})
-	if migrateErr != nil {
-		panic(`😫: Auto migrate failed, check your Postgres with ` + address)
 	}
 
 	app.Logger.Printf("🍟: Successfully connected to Postgres: %v", db)

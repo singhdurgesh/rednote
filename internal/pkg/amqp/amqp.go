@@ -59,12 +59,7 @@ func Connect(AMQPConfig *configs.AMQPConfig) *machinery.Server {
 
 	task := tasks.Signature{
 		Name: "task",
-		Args: []tasks.Arg{
-			{
-				Type:  "string",
-				Value: "payload",
-			},
-		},
+		Args: []tasks.Arg{},
 	}
 	_, err = server.SendTask(&task)
 

@@ -1,4 +1,7 @@
 # note: call scripts from /scripts
+include .env
+export
+
 run:
 	go run main.go server
 
@@ -21,3 +24,39 @@ docker_up:
 	docker-compose up -d
 
 docker_build_up: docker_down docker_rm docker_build
+
+# Database Migrations with Goose
+# https://github.com/pressly/goose
+migration_status:
+	goose -dir db/migrations status
+
+migration_create:
+	goose -dir db/migrations create $(name) sql
+
+migrate:
+	goose -dir db/migrations up
+
+rollback:
+	goose -dir db/migrations down
+
+# Re-run the latest migration
+migration_redo:
+	goose -dir db/migrations redo
+
+# Roll back all migrations
+migration_reset:
+	goose -dir db/migrations reset
+
+migration_reset:
+	goose -dir db/migrations redo
+
+migration_version:
+	goose -dir db/migrations version
+
+# Check migration files without running them
+migration_validate:
+	goose -dir db/migrations validate
+
+# -s or --schema-only means dump only the schema, no data
+update_schema:
+	PGPASSWORD=$(PG_PASSWORD) pg_dump -s -U $(PG_USERNAME) -h $(PG_HOST) -d $(DB_NAME) > db/schema.sql

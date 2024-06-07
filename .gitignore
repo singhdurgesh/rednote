@@ -17,6 +17,9 @@ configs/environments/*.yaml
 # Test binary, build with `go test -c`
 *.test
 
+# Env File
+.env
+
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 

@@ -15,6 +15,7 @@ func LoadExampleRoutes(r *gin.Engine) *gin.RouterGroup {
 	example.Use(middlewares.Jwt())
 
 	{
+		example.GET("/", exampleController.GetExampleLists)
 		example.POST("/createExample", exampleController.CreateExample)
 		example.GET("/getExample", exampleController.GetExample)
 		example.POST("/updateExample", exampleController.UpdateExample)
