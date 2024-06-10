@@ -116,6 +116,7 @@ CREATE TABLE public.users (
     last_login_at timestamp with time zone,
     phone text,
     email text,
+    email_verified boolean,
     deleted_at timestamp with time zone
 );
 
