@@ -38,3 +38,11 @@ amqpconfig:
   routingKey: ""
   consumerTag: ""
   workerPoolSize: 6
+oAuth:
+  googleOAuth:
+    clientId:
+    clientSecret:
+    scopes:
+    authUrl:
+    accessTokennUrl:
+    redirectUrl:

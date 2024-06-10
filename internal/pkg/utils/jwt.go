@@ -14,6 +14,7 @@ type Claims struct {
 
 	Uid      uint   `json:"uid"`
 	Username string `json:"username"`
+	AuthMode string `json:"authmode"`
 }
 
 // generate tokens used for auth
