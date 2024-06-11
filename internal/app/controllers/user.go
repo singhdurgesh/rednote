@@ -37,13 +37,13 @@ func (userController *UserController) LoginByUsernamePassword(ctx *gin.Context) 
 		return
 	}
 
-	token := userService.LoginByUsernamePassword(username, password)
+	token, user := userService.LoginByUsernamePassword(username, password)
 	if token == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"code": http.StatusBadRequest, "message": "Username or Password Error"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"code": http.StatusBadRequest, "message": "Username or Password Invalid"})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"auth_token": token})
+	ctx.JSON(http.StatusOK, gin.H{"token": token, "user": user})
 }
 
 func (userController *UserController) SignupByUsernamePassword(ctx *gin.Context) {
@@ -117,14 +117,14 @@ func (userController *UserController) VerifyLoginOtpPhone(ctx *gin.Context) {
 		return
 	}
 
-	token, err := userService.VerifyLoginOtpPhone(data["phone"].(string), data["otp"].(string))
+	token, user := userService.VerifyLoginOtpPhone(data["phone"].(string), data["otp"].(string))
 
-	if err != "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"code": http.StatusBadRequest, "message": err})
+	if token == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"code": http.StatusBadRequest, "message": "Invalid Mobile or OTP"})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"token": token})
+	ctx.JSON(http.StatusOK, gin.H{"token": token, "user": user})
 }
 
 func (userController *UserController) ResendLoginOtpPhone(ctx *gin.Context) {

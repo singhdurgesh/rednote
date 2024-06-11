@@ -10,6 +10,7 @@ CREATE TABLE users (
     last_login_at timestamp with time zone,
     phone text,
     email text,
+    email_verified bool,
     deleted_at timestamp with time zone
 );
 

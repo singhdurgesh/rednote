@@ -14,6 +14,7 @@ type Config struct {
 	Jwt        Jwt
 	AMQPConfig AMQPConfig
 	App        App
+	OAuth      OAuth
 }
 
 func LoadConfig() *Config {

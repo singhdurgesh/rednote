@@ -18,6 +18,9 @@ func Init() {
 	// public routes, no auth required
 	LoadPublicRoutes(Router)
 
+	// Admin Routes
+	LoadAdminRoutes(Router)
+
 	// user routes
 	LoadUserRoutes(Router)
 
@@ -26,6 +29,8 @@ func Init() {
 
 	// job queue routes
 	LoadJobQueueRoutes(Router)
+
+	LoadWebhookRoutes(Router)
 	// init swagger
 	// Router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 }

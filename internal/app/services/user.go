@@ -18,23 +18,23 @@ type UserService struct{}
 // @name LoginByUsernamePassword
 // @description LoginByUsernamePassword
 // @return string
-func (userService *UserService) LoginByUsernamePassword(username string, password string) string {
+func (userService *UserService) LoginByUsernamePassword(username string, password string) (string, *models.User) {
 
 	user := models.User{}
 
 	res := app.Db.First(&user, "username = ?", username)
 
 	if res.Error != nil || res.RowsAffected == 0 {
-		return ""
+		return "", nil
 	}
 
 	err := bcrypt.CompareHashAndPassword([]byte(user.Password.String), []byte(password))
 	if err != nil {
-		return ""
+		return "", nil
 	}
 
-	token := userService.GenerateJwtToken(&user)
-	return token
+	token := userService.GenerateJwtToken(&user, "OTP")
+	return token, &user
 }
 
 func (userService *UserService) SignupByUsernamePassword(data map[string]interface{}) (string, *models.User) {
@@ -52,7 +52,7 @@ func (userService *UserService) SignupByUsernamePassword(data map[string]interfa
 		return "", user
 	}
 
-	token := userService.GenerateJwtToken(user)
+	token := userService.GenerateJwtToken(user, "OTP")
 
 	app.Db.Find(&user, "id = ?", user.ID)
 	return token, user
@@ -135,31 +135,32 @@ func (userService *UserService) ReSendLoginOtpPhone(phone string) (bool, string)
 	return true, ""
 }
 
-func (userService *UserService) VerifyLoginOtpPhone(phone string, otp string) (string, string) {
+func (userService *UserService) VerifyLoginOtpPhone(phone string, otp string) (string, *models.User) {
 	user := models.User{}
 	res := app.Db.Find(&user, "phone = ?", phone)
 
 	if res.Error != nil {
 		log.Println(res.Error, "Affected Rows: ", res.RowsAffected)
-		return "", "Invalid Phone"
+		return "", nil
 	}
 
 	// Verify OTP Code
 	result := otp_handler.ValidateOTP(phone, otp)
 
 	if !result {
-		return "", "Invalid OTP"
+		return "", nil
 	}
 
-	token := userService.GenerateJwtToken(&user)
+	token := userService.GenerateJwtToken(&user, "OTP")
 
-	return token, ""
+	return token, &user
 }
 
-func (userService *UserService) GenerateJwtToken(user *models.User) string {
+func (userService *UserService) GenerateJwtToken(user *models.User, authMode string) string {
 	claims := utils.Claims{
 		Username: user.Username.String,
 		Uid:      user.ID,
+		AuthMode: authMode,
 	}
 
 	return utils.GenerateToken(&claims)
