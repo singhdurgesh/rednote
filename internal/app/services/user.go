@@ -24,6 +24,22 @@ func (userService *UserService) CreateUser(data map[string]interface{}) *models.
 	return &user
 }
 
+func (userService *UserService) UpdateUser(userId int, data map[string]interface{}) (*models.User, error) {
+	user := models.User{}
+	user.ID = uint(userId)
+
+	res := app.Db.Model(&user).Updates(data)
+
+	if res.Error != nil || res.RowsAffected == 0 {
+		log.Println(res.Error)
+		return nil, res.Error
+	}
+
+	app.Db.Find(&user, "id = ?", userId)
+
+	return &user, nil
+}
+
 func (userService *UserService) UpdatePassword(userId int, password string) error {
 	user := models.User{}
 	user.ID = uint(userId)

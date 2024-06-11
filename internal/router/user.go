@@ -26,6 +26,7 @@ func LoadUserRoutes(r *gin.Engine) *gin.RouterGroup {
 
 	{
 		user.GET("/profile", userController.GetUserProfile)
+		user.PUT("/updateProfile", userController.UpdateUser)
 	}
 
 	return auth
