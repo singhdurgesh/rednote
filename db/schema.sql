@@ -117,6 +117,7 @@ CREATE TABLE public.users (
     phone text,
     email text,
     email_verified boolean,
+    dob date,
     deleted_at timestamp with time zone
 );
 

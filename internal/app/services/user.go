@@ -38,7 +38,7 @@ func (userService *UserService) LoginByUsernamePassword(username string, passwor
 }
 
 func (userService *UserService) SignupByUsernamePassword(data map[string]interface{}) (string, *models.User) {
-	userData := map[string]interface{}{"name": data["name"], "username": data["username"], "email": data["email"], "phone": data["phone"]}
+	userData := map[string]interface{}{"name": data["name"], "username": data["username"], "email": data["email"], "phone": data["phone"], "dob": data["dob"]}
 	user := userService.CreateUser(userData)
 
 	if user == nil {

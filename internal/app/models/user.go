@@ -16,4 +16,5 @@ type User struct {
 	Email         datatypes.NullString `json:"email" gorm:"uniqueIndex"`    // Email
 	EmailVerified bool                 `json:"email_verified"`
 	LastLoginAt   time.Time            `json:"-"` // Last login time
+	Dob           datatypes.Date       `json:"dob"`
 }
