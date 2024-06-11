@@ -4,10 +4,13 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/singhdurgesh/rednote/internal/app/services"
 	"github.com/singhdurgesh/rednote/internal/pkg/utils"
 
 	"github.com/gin-gonic/gin"
 )
+
+var userService = new(services.UserService)
 
 // Jwt middleware
 func Jwt() gin.HandlerFunc {
@@ -35,6 +38,17 @@ func Jwt() gin.HandlerFunc {
 			ctx.JSON(http.StatusUnauthorized, gin.H{"code": http.StatusUnauthorized, "message": "Not Authorized"})
 			return
 		}
+
+		user := userService.GetActiveUserById(int(claims.Uid))
+
+		if user == nil {
+			ctx.Abort()
+			ctx.JSON(http.StatusUnauthorized, gin.H{"code": http.StatusUnauthorized, "message": "Inactive User"})
+			return
+		}
+
+		ctx.Set("currentUser", user)
+		ctx.Set("authProvider", claims.AuthMode)
 
 		ctx.Next()
 	}

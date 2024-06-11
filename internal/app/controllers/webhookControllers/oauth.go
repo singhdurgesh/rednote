@@ -7,12 +7,14 @@ import (
 	"github.com/singhdurgesh/rednote/cmd/app"
 	"github.com/singhdurgesh/rednote/internal/app/models"
 	"github.com/singhdurgesh/rednote/internal/app/services"
+	"github.com/singhdurgesh/rednote/internal/constants"
 	"github.com/singhdurgesh/rednote/pkg/oauth/googleOAuth"
 )
 
 type OAuthController struct{}
 
 var userService = new(services.UserService)
+var authService = new(services.AuthService)
 
 func (webhookController *OAuthController) GoogleLogin(ctx *gin.Context) {
 	code := ctx.Query("code")
@@ -41,7 +43,7 @@ func (webhookController *OAuthController) GoogleLogin(ctx *gin.Context) {
 	}
 
 	// 3. Generate JWT Token for that User with flag as GoogleOauth Logged in
-	authToken := userService.GenerateJwtToken(user, "GoogleSSO")
+	authToken := authService.GenerateJwtToken(user, constants.GOOGLE_AUTH_MODE)
 
 	ctx.JSON(http.StatusOK, gin.H{"token": authToken, "user": user})
 }

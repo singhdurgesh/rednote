@@ -5,58 +5,10 @@ import (
 
 	"github.com/singhdurgesh/rednote/cmd/app"
 	"github.com/singhdurgesh/rednote/internal/app/models"
-	"github.com/singhdurgesh/rednote/internal/app/services/otp_handler"
-	"github.com/singhdurgesh/rednote/internal/pkg/utils"
-	"github.com/singhdurgesh/rednote/internal/tasks"
-	"github.com/singhdurgesh/rednote/internal/tasks/notifications"
-
 	"golang.org/x/crypto/bcrypt"
 )
 
 type UserService struct{}
-
-// @name LoginByUsernamePassword
-// @description LoginByUsernamePassword
-// @return string
-func (userService *UserService) LoginByUsernamePassword(username string, password string) (string, *models.User) {
-
-	user := models.User{}
-
-	res := app.Db.First(&user, "username = ?", username)
-
-	if res.Error != nil || res.RowsAffected == 0 {
-		return "", nil
-	}
-
-	err := bcrypt.CompareHashAndPassword([]byte(user.Password.String), []byte(password))
-	if err != nil {
-		return "", nil
-	}
-
-	token := userService.GenerateJwtToken(&user, "OTP")
-	return token, &user
-}
-
-func (userService *UserService) SignupByUsernamePassword(data map[string]interface{}) (string, *models.User) {
-	userData := map[string]interface{}{"name": data["name"], "username": data["username"], "email": data["email"], "phone": data["phone"], "dob": data["dob"]}
-	user := userService.CreateUser(userData)
-
-	if user == nil {
-		return "", user
-	}
-
-	err := userService.UpdatePassword(int(user.ID), data["password"].(string))
-
-	if err != nil {
-		log.Println(err.Error())
-		return "", user
-	}
-
-	token := userService.GenerateJwtToken(user, "OTP")
-
-	app.Db.Find(&user, "id = ?", user.ID)
-	return token, user
-}
 
 func (userService *UserService) CreateUser(data map[string]interface{}) *models.User {
 	res := app.Db.Model(&models.User{}).Create(data)
@@ -91,77 +43,14 @@ func (userService *UserService) UpdatePassword(userId int, password string) erro
 	return nil
 }
 
-func (userService *UserService) SendLoginOtpPhone(phone string) (bool, string) {
+func (userService *UserService) GetActiveUserById(userId int) *models.User {
 	user := models.User{}
-	user.Phone.Scan(phone)
-
-	res := app.Db.Where(&user).FirstOrCreate(&user)
+	res := app.Db.Find(&user, "id = ?", userId)
 
 	if res.Error != nil {
-		log.Println(res.Error, "Affected Rows: ", res.RowsAffected)
-		return false, "Could not create the user"
+		log.Println(res.Error)
+		return nil
 	}
 
-	// Generate and Send OTP Code
-	task := notifications.NewLoginOtpCommunication(user)
-	err := tasks.RunAsync(task)
-
-	if err != nil {
-		return false, err.Error()
-	}
-
-	return true, ""
-}
-
-func (userService *UserService) ReSendLoginOtpPhone(phone string) (bool, string) {
-	user := models.User{}
-	user.Phone.Scan(phone)
-
-	res := app.Db.Where(&user).FirstOrCreate(&user)
-
-	if res.Error != nil {
-		log.Println(res.Error, "Affected Rows: ", res.RowsAffected)
-		return false, "Could not create the user"
-	}
-
-	// Generate and Send OTP Code
-	task := notifications.NewResendLoginOtpCommunication(user)
-	err := tasks.RunAsync(task)
-
-	if err != nil {
-		return false, err.Error()
-	}
-
-	return true, ""
-}
-
-func (userService *UserService) VerifyLoginOtpPhone(phone string, otp string) (string, *models.User) {
-	user := models.User{}
-	res := app.Db.Find(&user, "phone = ?", phone)
-
-	if res.Error != nil {
-		log.Println(res.Error, "Affected Rows: ", res.RowsAffected)
-		return "", nil
-	}
-
-	// Verify OTP Code
-	result := otp_handler.ValidateOTP(phone, otp)
-
-	if !result {
-		return "", nil
-	}
-
-	token := userService.GenerateJwtToken(&user, "OTP")
-
-	return token, &user
-}
-
-func (userService *UserService) GenerateJwtToken(user *models.User, authMode string) string {
-	claims := utils.Claims{
-		Username: user.Username.String,
-		Uid:      user.ID,
-		AuthMode: authMode,
-	}
-
-	return utils.GenerateToken(&claims)
+	return &user
 }
