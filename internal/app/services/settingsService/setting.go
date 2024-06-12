@@ -1,4 +1,4 @@
-package settingService
+package settingsService
 
 import (
 	"errors"
@@ -9,6 +9,18 @@ import (
 )
 
 type SettingService struct{}
+
+func GetValue(key string) string {
+	setting := models.Setting{}
+
+	resp := app.Db.Model(&models.Setting{}).First(&setting, "key = ?", key)
+
+	if resp.Error != nil || resp.RowsAffected == 0 {
+		return ""
+	}
+
+	return setting.Value
+}
 
 func (settingService *SettingService) GetAll() ([]models.Setting, error) {
 	var settings []models.Setting

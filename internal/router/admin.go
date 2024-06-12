@@ -18,6 +18,7 @@ func LoadAdminRoutes(r *gin.Engine) *gin.RouterGroup {
 
 	setting := admin.Group("/settings")
 	setting.Use(middlewares.Jwt())
+	setting.Use(middlewares.AdminAuth())
 
 	{
 		setting.GET("/", settingController.GetAll)
