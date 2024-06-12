@@ -5,18 +5,20 @@
 - User Registration Methods using
     - **using Username/Password - Done**
     - **using OTP on Phone/Email - Done**
-    - using Google SSO
+    - **using Google SSO - Done**
     - using Apple SSO
 - User Login Methods using
     - **Username/Password - Done**
-    - **using OTP on Phone/Email**
-    - using Google SSO
+    - **using OTP on Phone/Email - Done**
+    - **using Google SSO - Done** 
     - using Apple SSO
 - User Password Reset using
     - using OTP on Phone/Email
 
 - Real Time Chat Application APIs
 - Real Time Location Tracking APIs
+
+- **Versioned Database Migration with Goose Package - Done**
 
 - Job/Task Processing
     - **RabbitMQ Integration - Done**
@@ -41,4 +43,3 @@ TODO:
     - Exposing New Apis
     - Building New Data Models
     - Building New Services
-- Database Migration with Goose Package
