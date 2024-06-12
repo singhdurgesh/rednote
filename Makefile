@@ -47,9 +47,6 @@ migration_redo:
 migration_reset:
 	goose -dir db/migrations reset
 
-migration_reset:
-	goose -dir db/migrations redo
-
 migration_version:
 	goose -dir db/migrations version
 

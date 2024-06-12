@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/singhdurgesh/rednote/cmd/app"
+	"github.com/singhdurgesh/rednote/internal/app/services/settingsService"
 	"github.com/singhdurgesh/rednote/internal/app/services/text_notifications.go"
 	"github.com/singhdurgesh/rednote/internal/pkg/utils"
 )
@@ -63,7 +64,7 @@ func ValidateOTP(phone string, otp string) bool {
 		return false
 	}
 
-	if otp != generatedOTP && otp != "111111" {
+	if otp != generatedOTP && otp != settingsService.GetValue("TestOTP") {
 		return false
 	}
 
