@@ -6,13 +6,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var authController = new(adminControllers.AuthController)
+var adminAuthController = new(adminControllers.AuthController)
 
 func LoadAdminRoutes(r *gin.Engine) *gin.RouterGroup {
 	admin := r.Group("/admin")
 
 	{
-		admin.POST("/googleLogin", authController.GoogleLogin)
+		admin.POST("/googleLogin", adminAuthController.GoogleLogin)
 	}
 
 	return admin

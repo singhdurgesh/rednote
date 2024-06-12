@@ -11,6 +11,7 @@ CREATE TABLE users (
     phone text,
     email text,
     email_verified bool,
+    dob date,
     deleted_at timestamp with time zone
 );
 

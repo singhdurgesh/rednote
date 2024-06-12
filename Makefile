@@ -33,10 +33,10 @@ migration_status:
 migration_create:
 	goose -dir db/migrations create $(name) sql
 
-migrate:
+migrate: update_schema
 	goose -dir db/migrations up
 
-rollback:
+rollback: update_schema
 	goose -dir db/migrations down
 
 # Re-run the latest migration

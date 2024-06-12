@@ -37,7 +37,7 @@ func JwtVerify(tokenStr string) (*Claims, error) {
 		return []byte(app.Config.Jwt.Secret), nil
 	})
 
-	if !token.Valid || err != nil {
+	if err != nil || !token.Valid {
 		return nil, fmt.Errorf("token invalid")
 	}
 	claims, ok := token.Claims.(*Claims)
